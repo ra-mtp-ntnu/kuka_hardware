@@ -1,0 +1,15 @@
+my_robot_joint_trajectory_controller:
+  joints:
+    - joint_a1
+    - joint_a2
+    - joint_a3
+    - joint_a4
+    - joint_a5
+    - joint_a6
+  write_op_modes:
+    - write1
+    - write2
+    - write3
+    - write4
+    - write5
+    - write6
