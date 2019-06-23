@@ -16,6 +16,7 @@ find_package(controller_manager REQUIRED)
 find_package(hardware_interface REQUIRED)
 find_package(rcutils REQUIRED)
 find_package(rclcpp REQUIRED)
+find_package(angles REQUIRED)
 find_package(tinyxml_vendor REQUIRED)
 
 add_library(kuka_rsi_hardware SHARED src/kuka_rsi_hardware.cpp)
@@ -25,6 +26,7 @@ ament_target_dependencies(
   kuka_rsi_hardware
   hardware_interface
   rcutils
+  angles
 )
 
 add_executable(kuka_rsi_hardware_node src/kuka_rsi_hardware_node.cpp)
@@ -56,6 +58,9 @@ install(TARGETS kuka_rsi_hardware
 install(TARGETS kuka_rsi_hardware_node
   DESTINATION lib/${PROJECT_NAME})
 
+install(DIRECTORY config 
+  DESTINATION share/${PROJECT_NAME}
+)
 
 ament_export_libraries(kuka_rsi_hardware)
 ament_export_include_directories(include)

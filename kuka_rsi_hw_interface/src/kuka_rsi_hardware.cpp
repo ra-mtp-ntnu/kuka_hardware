@@ -19,19 +19,26 @@
 
 #include "rcutils/logging_macros.h"
 
-namespace kuka_rsi_hardware {
+namespace kuka_rsi_hardware
+{
 
-hardware_interface::hardware_interface_ret_t KukaRsiHardware::init() {
+hardware_interface::hardware_interface_ret_t KukaRsiHardware::init()
+{
   server_.reset(new UDPServer("127.0.0.1", 49152));
 
   auto ret = hardware_interface::HW_RET_ERROR;
 
-  for (std::size_t i = 0; i < 6; ++i) {
+  for (std::size_t i = 0; i < 6; ++i)
+  {
     joint_state_handles_[i] = hardware_interface::JointStateHandle(
         joint_names_[i], &joint_position_[i], &joint_velocity_[i],
         &joint_effort_[i]);
+
+    // RCUTILS_LOG_INFO("JointStateHandle %p", &joint_state_handles_[i]);
+
     ret = register_joint_state_handle(&joint_state_handles_[i]);
-    if (ret != hardware_interface::HW_RET_OK) {
+    if (ret != hardware_interface::HW_RET_OK)
+    {
       RCUTILS_LOG_WARN("can't register joint state handle %s",
                        joint_names_[i].c_str());
       return ret;
@@ -40,7 +47,11 @@ hardware_interface::hardware_interface_ret_t KukaRsiHardware::init() {
     joint_command_handles_[i] = hardware_interface::JointCommandHandle(
         joint_names_[i], &joint_position_command_[i]);
     ret = register_joint_command_handle(&joint_command_handles_[i]);
-    if (ret != hardware_interface::HW_RET_OK) {
+
+    RCUTILS_LOG_INFO("JointCommandHandle %p", &joint_command_handles_[i]);
+
+    if (ret != hardware_interface::HW_RET_OK)
+    {
       RCUTILS_LOG_WARN("can't register joint command handle %s",
                        joint_names_[i].c_str());
       return ret;
@@ -50,7 +61,8 @@ hardware_interface::hardware_interface_ret_t KukaRsiHardware::init() {
         read_op_handle_names_[i],
         reinterpret_cast<hardware_interface::OperationMode *>(&read_op_[i]));
     ret = register_operation_mode_handle(&read_op_handles_[i]);
-    if (ret != hardware_interface::HW_RET_OK) {
+    if (ret != hardware_interface::HW_RET_OK)
+    {
       RCUTILS_LOG_WARN("can't register operation mode handle %s",
                        read_op_handle_names_[i].c_str());
       return ret;
@@ -60,7 +72,8 @@ hardware_interface::hardware_interface_ret_t KukaRsiHardware::init() {
         write_op_handle_names_[i],
         reinterpret_cast<hardware_interface::OperationMode *>(&write_op_[i]));
     ret = register_operation_mode_handle(&write_op_handles_[i]);
-    if (ret != hardware_interface::HW_RET_OK) {
+    if (ret != hardware_interface::HW_RET_OK)
+    {
       RCUTILS_LOG_WARN("can't register operation mode handle %s",
                        write_op_handle_names_[i].c_str());
       return ret;
@@ -70,15 +83,26 @@ hardware_interface::hardware_interface_ret_t KukaRsiHardware::init() {
   return hardware_interface::HW_RET_OK;
 }
 
-hardware_interface::hardware_interface_ret_t KukaRsiHardware::read() {
+hardware_interface::hardware_interface_ret_t KukaRsiHardware::read()
+{
   return hardware_interface::HW_RET_OK;
 }
 
-hardware_interface::hardware_interface_ret_t KukaRsiHardware::write() {
-  // for (std::size_t i = 0; i < 6; ++i) {
-  //   joint_position_[i] = joint_position_command_[i];
-  // }
+hardware_interface::hardware_interface_ret_t KukaRsiHardware::write()
+{
+
+  // RCUTILS_LOG_INFO("[%2f, %2f, %2f, %2f, %2f, %2f]",
+  //                  joint_position_command_[0], 
+  //                  joint_position_command_[1], 
+  //                  joint_position_command_[2], 
+  //                  joint_position_command_[3], 
+  //                  joint_position_command_[4], 
+  //                  joint_position_command_[5]);
+
+  for (std::size_t i = 0; i < 6; ++i) {
+    joint_position_[i] = joint_position_command_[i];
+  }
   return hardware_interface::HW_RET_OK;
 }
 
-}  // namespace kuka_rsi_hardware
+} // namespace kuka_rsi_hardware

@@ -53,7 +53,7 @@ int main(int argc, char* argv[]) {
     return -1;
   }
 
-  rclcpp::Rate r(10);
+  rclcpp::Rate r(100);
   // main loop
   hardware_interface::hardware_interface_ret_t ret;
   while (rclcpp::ok()) {

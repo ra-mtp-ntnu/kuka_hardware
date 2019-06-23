@@ -17,7 +17,6 @@ import time
 
 import rclpy
 from rclpy.node import Node
-from rclpy.clock import Clock
 from std_msgs.msg import Header
 from sensor_msgs.msg import JointState
 
