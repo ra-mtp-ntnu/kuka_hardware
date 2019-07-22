@@ -32,6 +32,7 @@ setup(
             'kuka_rsi_simulator = kuka_rsi_simulator.kuka_rsi_simulator:main',
             'joint_state_publisher = kuka_rsi_simulator.joint_state_publisher:main',
             'joint_trajectory_publisher = kuka_rsi_simulator.joint_trajectory_publisher:main',
+            'follow_joint_trajectory_action_client = kuka_rsi_simulator.follow_joint_trajectory_action_client:main',
         ],
     },
 )

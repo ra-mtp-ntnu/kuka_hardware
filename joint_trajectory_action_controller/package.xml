@@ -1,0 +1,18 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<package format="2">
+  <name>joint_trajectory_action_controller</name>
+  <version>0.0.0</version>
+  <description>The joint_trajectory_action_controller package</description>
+  <maintainer email="lars.tingelstad@ntnu.no">Lars Tingelstad</maintainer>
+  <license>Apache License 2.0</license>
+
+  <author>Lars Tingelstad</author>
+
+  <depend>rclcpp</depend>
+  <depend>pluginlib</depend>
+  <depend>control_msgs</depend>
+
+  <export>
+    <build_type>ament_cmake</build_type>
+  </export>
+</package>
