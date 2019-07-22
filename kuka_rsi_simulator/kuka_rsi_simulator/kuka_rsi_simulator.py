@@ -32,7 +32,7 @@ class KukaRsiSimulator(Node):
     def __init__(self):
         super().__init__(node_name)
         self._publisher = self.create_publisher(String, 'topic', 10)
-        timer_period = 0.004  # seconds
+        timer_period = 0.01  # seconds
         self.timer = self.create_timer(timer_period, self.timer_callback)
         self.i = 0
 
@@ -42,20 +42,19 @@ class KukaRsiSimulator(Node):
         self._port = 49152
 
         self.act_joint_pos = np.array([0.0, -90.0, 90.0, 0.0, 90.0, 0.0])
-        self.cmd_joint_pos = self.act_joint_pos.copy()
-        self.des_joint_correction_absolute = np.zeros(6)
+        self.des_joint_correction = np.zeros(6)
         self.timeout_count = 0
         self.ipoc = 0
 
     def timer_callback(self):
         try:
             msg = self.create_rsi_xml_rob(
-                self.act_joint_pos, self.cmd_joint_pos, self.timeout_count, self.ipoc)
+                self.act_joint_pos, self.timeout_count, self.ipoc)
             self._socket.sendto(msg, (self._host, self._port))
             recv_msg, addr = self._socket.recvfrom(1024)
-            self.des_joint_correction_absolute, ipoc_recv = self.parse_rsi_xml_sen(
+            self.des_joint_correction, ipoc_recv = self.parse_rsi_xml_sen(
                 recv_msg)
-            self.act_joint_pos = self.cmd_joint_pos + self.des_joint_correction_absolute
+            self.act_joint_pos += self.des_joint_correction
             self.ipoc += 1
         except socket.timeout:
             self.get_logger().warn('{}: Socket timed out'.format(node_name))
@@ -67,12 +66,10 @@ class KukaRsiSimulator(Node):
         pubmsg = String()
         pubmsg.data = str(msg)[1:]
         self._publisher.publish(pubmsg)
-        self.get_logger().info('Publishing: "%s"' % pubmsg.data)
         self.i += 1
 
-    def create_rsi_xml_rob(self, act_joint_pos, setpoint_joint_pos, timeout_count, ipoc):
+    def create_rsi_xml_rob(self, act_joint_pos, timeout_count, ipoc):
         q = act_joint_pos
-        qd = setpoint_joint_pos
         root = ET.Element('Rob', {'TYPE': 'KUKA'})
         ET.SubElement(root, 'RIst', {'X': '0.0', 'Y': '0.0', 'Z': '0.0',
                                      'A': '0.0', 'B': '0.0', 'C': '0.0'})
@@ -80,8 +77,8 @@ class KukaRsiSimulator(Node):
                                      'A': '0.0', 'B': '0.0', 'C': '0.0'})
         ET.SubElement(root, 'AIPos', {'A1': str(q[0]), 'A2': str(q[1]), 'A3': str(q[2]),
                                       'A4': str(q[3]), 'A5': str(q[4]), 'A6': str(q[5])})
-        ET.SubElement(root, 'ASPos', {'A1': str(qd[0]), 'A2': str(qd[1]), 'A3': str(qd[2]),
-                                      'A4': str(qd[3]), 'A5': str(qd[4]), 'A6': str(qd[5])})
+        ET.SubElement(root, 'ASPos', {'A1': '0.0', 'A2': '0.0', 'A3': '0.0',
+                                      'A4': '0.0', 'A5': '0.0', 'A6': '0.0'})
         ET.SubElement(root, 'Delay', {'D': str(timeout_count)})
         ET.SubElement(root, 'IPOC').text = str(ipoc)
         return ET.tostring(root)
@@ -102,9 +99,6 @@ def main(args=None):
 
     rclpy.spin(kuka_rsi_simulator)
 
-    # Destroy the node explicitly
-    # (optional - otherwise it will be done automatically
-    # when the garbage collector destroys the node object)
     kuka_rsi_simulator.destroy_node()
     rclpy.shutdown()
 

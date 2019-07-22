@@ -23,8 +23,8 @@
 #include "hardware_interface/robot_hardware.hpp"
 #include "hardware_interface/types/hardware_interface_return_values.hpp"
 
-// #include "kuka_rsi_hardware/rsi_command.h"
-// #include "kuka_rsi_hardware/rsi_state.h"
+#include "kuka_rsi_hardware/rsi_command.h"
+#include "kuka_rsi_hardware/rsi_state.h"
 #include "kuka_rsi_hardware/udp_server.h"
 #include "kuka_rsi_hardware/visibility_control.h"
 
@@ -69,7 +69,12 @@ public:
     std::array<hardware_interface::OperationModeHandle, 6> read_op_handles_;
     std::array<hardware_interface::OperationModeHandle, 6> write_op_handles_;
 
+    unsigned long long ipoc_;
+
     std::unique_ptr<UDPServer> server_ = nullptr;
+
+    std::string in_buffer_;
+    std::string out_buffer_;
 };
 
 } // namespace kuka_rsi_hardware

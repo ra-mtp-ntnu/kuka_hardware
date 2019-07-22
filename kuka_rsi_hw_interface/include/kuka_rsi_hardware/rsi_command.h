@@ -42,7 +42,7 @@
 #include <tinyxml.h>
 #include <vector>
 
-namespace kuka_rsi_hw_interface
+namespace kuka_rsi_hardware
 {
 
 class RSICommand

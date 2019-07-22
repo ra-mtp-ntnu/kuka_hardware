@@ -33,7 +33,7 @@ class JointTrajectoryPublisher(Node):
         msg.joint_names = ['joint_a1', 'joint_a2',
                            'joint_a3', 'joint_a4', 'joint_a5', 'joint_a6']
 
-        ts = np.linspace(0.0, 100, 10000)
+        ts = np.linspace(0.0, 100, 1000)
         for t in ts:
             point = JointTrajectoryPoint()
             point.time_from_start = rclpy.duration.Duration(seconds=t).to_msg()

@@ -54,15 +54,14 @@ def generate_launch_description():
              output='screen',
              arguments=[controller_config_dir]),
 
-        # Node(package='kuka_rsi_hw_interface',
-        #      node_executable='kuka_rsi_hardware_node',
-        #     #  node_name='kuka_rsi_hardware_node',
-        #      output='screen'),
+        Node(package='kuka_rsi_hw_interface',
+             node_executable='kuka_rsi_hardware_node',
+            #  node_name='kuka_rsi_hardware_node',
+             output='screen'),
 
-
-        # Node(package='kuka_rsi_simulator',
-        #      node_executable='joint_state_publisher',
-        #      node_name='joint_state_publisher',
-        #      output='screen'),
+        Node(package='kuka_rsi_simulator',
+             node_executable='kuka_rsi_simulator',
+             node_name='kuka_rsi_simulator',
+             output='screen'),
 
     ])
