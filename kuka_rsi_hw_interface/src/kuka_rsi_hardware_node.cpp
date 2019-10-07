@@ -31,10 +31,12 @@ int main(int argc, char* argv[]) {
   // "my_robot_joint_state_controller" is the name for the node to spawn
   cm.load_controller("ros_controllers", "ros_controllers::JointStateController",
                      "my_robot_joint_state_controller");
+
   // load the trajectory controller
-  cm.load_controller("ros_controllers",
-                     "ros_controllers::JointTrajectoryController",
-                     "my_robot_joint_trajectory_controller");
+  cm.load_controller("etasl_ros2_controllers",
+                     "etasl_ros2_controllers::EtaslRos2Controller",
+                     "my_etasl_controller");
+
 
   // there is no async spinner in ROS 2, so we have to put the spin() in its own
   // thread

@@ -59,9 +59,9 @@ def generate_launch_description():
             #  node_name='kuka_rsi_hardware_node',
              output='screen'),
 
-        Node(package='kuka_rsi_simulator',
-             node_executable='kuka_rsi_simulator',
-             node_name='kuka_rsi_simulator',
-             output='screen'),
+     #    Node(package='kuka_rsi_simulator',
+     #         node_executable='kuka_rsi_simulator',
+     #         node_name='kuka_rsi_simulator',
+     #         output='screen'),
 
     ])

@@ -24,9 +24,9 @@ namespace kuka_rsi_hardware
 
 hardware_interface::hardware_interface_ret_t KukaRsiHardware::init()
 {
-  server_.reset(new UDPServer("127.0.0.1", 49152));
-  in_buffer_.resize(1024);
-  out_buffer_.resize(1024);
+  // server_.reset(new UDPServer("127.0.0.1", 49152));
+  // in_buffer_.resize(1024);
+  // out_buffer_.resize(1024);
 
   auto ret = hardware_interface::HW_RET_ERROR;
 
@@ -49,8 +49,6 @@ hardware_interface::hardware_interface_ret_t KukaRsiHardware::init()
     joint_command_handles_[i] = hardware_interface::JointCommandHandle(
         joint_names_[i], &joint_position_command_[i]);
     ret = register_joint_command_handle(&joint_command_handles_[i]);
-
-    RCUTILS_LOG_INFO("JointCommandHandle %p", &joint_command_handles_[i]);
 
     if (ret != hardware_interface::HW_RET_OK)
     {
@@ -87,17 +85,17 @@ hardware_interface::hardware_interface_ret_t KukaRsiHardware::init()
 
 hardware_interface::hardware_interface_ret_t KukaRsiHardware::read()
 {
-  if (server_->recv(in_buffer_) == 0)
-  {
-    return false;
-  }
+  // if (server_->recv(in_buffer_) == 0)
+  // {
+  //   return false;
+  // }
 
-  auto rsi_state = RSIState(in_buffer_);
-  for (std::size_t i = 0; i < 6; ++i)
-  {
-    joint_position_[i] = from_degrees(rsi_state.positions[i]);
-  }
-  ipoc_ = rsi_state.ipoc;
+  // auto rsi_state = RSIState(in_buffer_);
+  // for (std::size_t i = 0; i < 6; ++i)
+  // {
+  //   joint_position_[i] = from_degrees(rsi_state.positions[i]);
+  // }
+  // ipoc_ = rsi_state.ipoc;
 
   return hardware_interface::HW_RET_OK;
 }
@@ -105,15 +103,20 @@ hardware_interface::hardware_interface_ret_t KukaRsiHardware::read()
 hardware_interface::hardware_interface_ret_t KukaRsiHardware::write()
 {
 
-  std::vector<double> joint_position_correction(6);
   for (std::size_t i = 0; i < 6; ++i)
   {
-    joint_position_correction[i] = to_degrees(joint_position_command_[i]) - joint_position_[i];
-    RCUTILS_LOG_INFO("command[%d] %f ", i, joint_position_command_[i]);
+    joint_position_[i] = joint_position_command_[i];
   }
 
-  out_buffer_ = RSICommand(joint_position_correction, ipoc_).xml_doc;
-  server_->send(out_buffer_);
+  // std::vector<double> joint_position_correction(6);
+  // for (std::size_t i = 0; i < 6; ++i)
+  // {
+  //   joint_position_correction[i] = to_degrees(joint_position_command_[i]) - joint_position_[i];
+  //   RCUTILS_LOG_INFO("command[%d] %f ", i, joint_position_command_[i]);
+  // }
+
+  // out_buffer_ = RSICommand(joint_position_correction, ipoc_).xml_doc;
+  // server_->send(out_buffer_);
 
   return hardware_interface::HW_RET_OK;
 }
