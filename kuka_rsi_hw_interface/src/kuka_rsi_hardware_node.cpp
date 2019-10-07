@@ -17,7 +17,7 @@ int main(int argc, char* argv[]) {
 
   // initialize the robot
   if (my_robot->init() != hardware_interface::HW_RET_OK) {
-    fprintf(stderr, "failed to initialized yumi hardware\n");
+    fprintf(stderr, "failed to initialize hardware\n");
     return -1;
   }
 
