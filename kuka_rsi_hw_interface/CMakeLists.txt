@@ -21,46 +21,40 @@ find_package(tinyxml_vendor REQUIRED)
 find_package(TinyXML REQUIRED)
 
 add_library(kuka_rsi_hardware SHARED src/kuka_rsi_hardware.cpp)
-target_include_directories(kuka_rsi_hardware PRIVATE include ${TinyXML_INCLUDE_DIRS})
+target_include_directories(kuka_rsi_hardware
+                           PRIVATE include ${TinyXML_INCLUDE_DIRS})
 target_link_libraries(kuka_rsi_hardware ${TinyXML_LIBRARY})
-ament_target_dependencies(
-  kuka_rsi_hardware
-  hardware_interface
-  rcutils
-  angles
-)
+ament_target_dependencies(kuka_rsi_hardware
+                          hardware_interface
+                          rcutils
+                          angles)
 
 add_executable(kuka_rsi_hardware_node src/kuka_rsi_hardware_node.cpp)
-target_include_directories(kuka_rsi_hardware_node PRIVATE include &{TinyXML_INCLUDE_DIRS})
-target_link_libraries(kuka_rsi_hardware_node kuka_rsi_hardware ${TinyXML_LIBRARY})
-ament_target_dependencies(
-  kuka_rsi_hardware_node
-  controller_interface
-  controller_manager
-  rcutils
-  rclcpp
-)
+target_include_directories(kuka_rsi_hardware_node
+                           PRIVATE include &{TinyXML_INCLUDE_DIRS})
+target_link_libraries(kuka_rsi_hardware_node kuka_rsi_hardware
+                      ${TinyXML_LIBRARY})
+ament_target_dependencies(kuka_rsi_hardware_node
+                          controller_interface
+                          controller_manager
+                          rcutils
+                          rclcpp)
 
+# Causes the visibility macros to use dllexport rather than dllimport, which is
+# appropriate when building the dll but not consuming it.
+target_compile_definitions(kuka_rsi_hardware PRIVATE
+                           "KUKA_RSI_HARDWARE_BUILDING_DLL")
 
-# Causes the visibility macros to use dllexport rather than dllimport,
-# which is appropriate when building the dll but not consuming it.
-target_compile_definitions(kuka_rsi_hardware PRIVATE "KUKA_RSI_HARDWARE_BUILDING_DLL")
-
-install(DIRECTORY include/
-  DESTINATION include)
+install(DIRECTORY include/ DESTINATION include)
 
 install(TARGETS kuka_rsi_hardware
-  ARCHIVE DESTINATION lib
-  LIBRARY DESTINATION lib
-  RUNTIME DESTINATION bin
-)
+        ARCHIVE DESTINATION lib
+        LIBRARY DESTINATION lib
+        RUNTIME DESTINATION bin)
 
-install(TARGETS kuka_rsi_hardware_node
-  DESTINATION lib/${PROJECT_NAME})
+install(TARGETS kuka_rsi_hardware_node DESTINATION lib/${PROJECT_NAME})
 
-install(DIRECTORY config 
-  DESTINATION share/${PROJECT_NAME}
-)
+install(DIRECTORY config DESTINATION share/${PROJECT_NAME})
 
 ament_export_libraries(kuka_rsi_hardware)
 ament_export_include_directories(include)
