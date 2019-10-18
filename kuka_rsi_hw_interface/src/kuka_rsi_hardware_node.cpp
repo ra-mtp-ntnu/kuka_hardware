@@ -48,6 +48,14 @@ int main(int argc, char* argv[])
   rclcpp::Parameter task_specification_parameter("task_specification", task_specification);
   etasl_ros_controller->get_lifecycle_node()->set_parameter(task_specification_parameter);
 
+  std::vector<std::string> input_names = { "tgt1", "tgt2" };
+  rclcpp::Parameter input_name_parameters("input_names", input_names);
+  etasl_ros_controller->get_lifecycle_node()->set_parameter(input_name_parameters);
+
+  std::vector<std::string> input_types = { "Scalar", "Scalar" };
+  rclcpp::Parameter input_type_parameters("input_types", input_types);
+  etasl_ros_controller->get_lifecycle_node()->set_parameter(input_type_parameters);
+
   // there is no async spinner in ROS 2, so we have to put the spin() in its own thread
   auto future_handle = std::async(std::launch::async, spin, executor);
 
