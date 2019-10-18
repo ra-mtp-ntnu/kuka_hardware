@@ -12,11 +12,13 @@ endif()
 find_package(ament_cmake REQUIRED)
 find_package(urdf REQUIRED)
 
-install(DIRECTORY config meshes urdf launch
-  DESTINATION share/${PROJECT_NAME}
-)
+install(DIRECTORY config
+                  meshes
+                  urdf
+                  launch
+        DESTINATION share/${PROJECT_NAME})
 
 ament_export_dependencies(xacro)
 ament_export_dependencies(urdf)
 ament_export_dependencies(material)
-ament_package() 
+ament_package()
