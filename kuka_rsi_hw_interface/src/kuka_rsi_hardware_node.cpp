@@ -48,11 +48,11 @@ int main(int argc, char* argv[])
   rclcpp::Parameter task_specification_parameter("task_specification", task_specification);
   etasl_ros_controller->get_lifecycle_node()->set_parameter(task_specification_parameter);
 
-  std::vector<std::string> input_names = { "tgt1", "tgt2" };
+  std::vector<std::string> input_names = { "tgt1", "tgt2", "vec" };
   rclcpp::Parameter input_name_parameters("input_names", input_names);
   etasl_ros_controller->get_lifecycle_node()->set_parameter(input_name_parameters);
 
-  std::vector<std::string> input_types = { "Scalar", "Scalar" };
+  std::vector<std::string> input_types = { "Scalar", "Scalar", "Vector" };
   rclcpp::Parameter input_type_parameters("input_types", input_types);
   etasl_ros_controller->get_lifecycle_node()->set_parameter(input_type_parameters);
 
