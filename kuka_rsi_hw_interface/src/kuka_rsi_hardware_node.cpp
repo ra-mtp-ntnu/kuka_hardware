@@ -9,7 +9,7 @@ void spin(std::shared_ptr<rclcpp::executors::MultiThreadedExecutor> exe)
   exe->spin();
 }
 
-int main(int argc, char *argv[])
+int main(int argc, char* argv[])
 {
   rclcpp::init(argc, argv);
 
@@ -29,25 +29,22 @@ int main(int argc, char *argv[])
   controller_manager::ControllerManager cm(my_robot, executor);
 
   // load the joint state controller.
-  cm.load_controller("ros_controllers", "ros_controllers::JointStateController",
-                     "joint_state_controller");
+  cm.load_controller("ros_controllers", "ros_controllers::JointStateController", "joint_state_controller");
 
   // load the trajectory controller
-  auto etasl_ros_controller = cm.load_controller("etasl_ros2_controllers",
-                                                 "etasl_ros2_controllers::EtaslRos2Controller",
-                                                 "etasl_ros2_controller");
+  auto etasl_ros_controller = cm.load_controller(
+      "etasl_ros2_controllers", "etasl_ros2_controllers::EtaslRos2Controller", "etasl_ros2_controller");
 
-  std::vector<std::string> joint_names = {"joint_a1", "joint_a2", "joint_a3", "joint_a4", "joint_a5", "joint_a6"};
+  std::vector<std::string> joint_names = { "joint_a1", "joint_a2", "joint_a3", "joint_a4", "joint_a5", "joint_a6" };
   rclcpp::Parameter joint_parameters("joints", joint_names);
   etasl_ros_controller->get_lifecycle_node()->set_parameter(joint_parameters);
 
-  std::vector<std::string> operation_mode_names =
-      {"write1", "write2", "write3", "write4", "write5", "write6"};
+  std::vector<std::string> operation_mode_names = { "write1", "write2", "write3", "write4", "write5", "write6" };
   rclcpp::Parameter operation_mode_parameters("write_op_modes", operation_mode_names);
   etasl_ros_controller->get_lifecycle_node()->set_parameter(operation_mode_parameters);
 
-  std::string task_specification =
-      "/home/lars/etasl_ros2_control_ws/src/etasl_ros2_control/etasl_ros2_controllers/test/test.lua";
+  std::string task_specification = "/home/lars/etasl_ros2_control_ws/src/etasl_ros2_control/"
+                                   "etasl_ros2_control_examples/scripts/example_kuka_2.lua";
   rclcpp::Parameter task_specification_parameter("task_specification", task_specification);
   etasl_ros_controller->get_lifecycle_node()->set_parameter(task_specification_parameter);
 
