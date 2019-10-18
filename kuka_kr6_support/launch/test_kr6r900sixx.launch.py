@@ -31,7 +31,6 @@ def generate_launch_description():
 
     controller_config_dir = os.path.join(get_package_share_directory(
         'kuka_rsi_hw_interface'), 'config', 'ros2_controllers.yaml')
-    print(controller_config_dir)
     assert os.path.exists(controller_config_dir)
 
     return LaunchDescription([
