@@ -22,6 +22,7 @@
   <build_depend>hardware_interface</build_depend>
   <build_depend>rcutils</build_depend>
 
+  <depend>pluginlib</depend>
   <depend>angles</depend>
   <depend>tinyxml_vendor</depend>
 

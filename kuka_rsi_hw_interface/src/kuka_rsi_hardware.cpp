@@ -112,3 +112,7 @@ hardware_interface::hardware_interface_ret_t KukaRsiHardware::write()
 }
 
 }  // namespace kuka_rsi_hardware
+
+#include "pluginlib/class_list_macros.hpp"
+
+PLUGINLIB_EXPORT_CLASS(kuka_rsi_hardware::KukaRsiHardware, hardware_interface::RobotHardware)

@@ -1,0 +1,9 @@
+<library path="kuka_rsi_hardware">
+
+  <class name="kuka_rsi_hardware" type="kuka_rsi_hardware::KukaRsiHardware" base_class_type="hardware_interface::RobotHardware">
+    <description>
+        KUKA RSI hardware interface
+    </description>
+  </class>
+
+</library>
