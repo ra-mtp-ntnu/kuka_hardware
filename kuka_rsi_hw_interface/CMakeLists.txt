@@ -31,14 +31,15 @@ ament_target_dependencies(kuka_rsi_hardware
 
 add_executable(kuka_rsi_hardware_node src/kuka_rsi_hardware_node.cpp)
 target_include_directories(kuka_rsi_hardware_node
-                           PRIVATE include &{TinyXML_INCLUDE_DIRS})
+                           PRIVATE include ${TinyXML_INCLUDE_DIRS})
 target_link_libraries(kuka_rsi_hardware_node kuka_rsi_hardware
                       ${TinyXML_LIBRARY})
 ament_target_dependencies(kuka_rsi_hardware_node
                           controller_interface
                           controller_manager
                           rcutils
-                          rclcpp)
+                          rclcpp
+                          )
 
 # Causes the visibility macros to use dllexport rather than dllimport, which is
 # appropriate when building the dll but not consuming it.

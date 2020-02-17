@@ -29,11 +29,11 @@ int main(int argc, char* argv[])
   controller_manager::ControllerManager cm(my_robot, executor);
 
   // load the joint state controller.
-  cm.load_controller("ros_controllers", "ros_controllers::JointStateController", "joint_state_controller");
+  cm.load_controller("joint_state_controller", "ros_controllers::JointStateController");
 
   // load the trajectory controller
   auto etasl_ros_controller = cm.load_controller(
-      "etasl_ros2_controllers", "etasl_ros2_controllers::EtaslRos2Controller", "etasl_ros2_controller");
+      "etasl_ros2_controller", "etasl_ros2_controllers::EtaslRos2Controller");
 
   std::vector<std::string> joint_names = { "joint_a1", "joint_a2", "joint_a3", "joint_a4", "joint_a5", "joint_a6" };
   rclcpp::Parameter joint_parameters("joints", joint_names);
