@@ -31,7 +31,7 @@ class KukaRsiSimulator(Node):
 
     def __init__(self):
         super().__init__(node_name)
-        self._publisher = self.create_publisher(String, 'topic', 10)
+        self._publisher = self.create_publisher(String, 'rsi_sim_topic', 10)
         timer_period = 0.01  # seconds
         self.timer = self.create_timer(timer_period, self.timer_callback)
         self.i = 0
@@ -42,6 +42,7 @@ class KukaRsiSimulator(Node):
         self._port = 49152
 
         self.act_joint_pos = np.array([0.0, -90.0, 90.0, 0.0, 90.0, 0.0])
+        self.initial_joint_pos = self.act_joint_pos.copy()
         self.des_joint_correction = np.zeros(6)
         self.timeout_count = 0
         self.ipoc = 0
@@ -50,11 +51,14 @@ class KukaRsiSimulator(Node):
         try:
             msg = self.create_rsi_xml_rob(
                 self.act_joint_pos, self.timeout_count, self.ipoc)
+            print("msg",msg)
             self._socket.sendto(msg, (self._host, self._port))
             recv_msg, addr = self._socket.recvfrom(1024)
             self.des_joint_correction, ipoc_recv = self.parse_rsi_xml_sen(
                 recv_msg)
-            self.act_joint_pos += self.des_joint_correction
+            print("self.des_joint_correction",self.des_joint_correction)
+            self.act_joint_pos = self.des_joint_correction + self.initial_joint_pos
+            print("self.act_joint_pos", self.act_joint_pos)
             self.ipoc += 1
         except socket.timeout:
             self.get_logger().warn('{}: Socket timed out'.format(node_name))
@@ -65,6 +69,9 @@ class KukaRsiSimulator(Node):
 
         pubmsg = String()
         pubmsg.data = str(msg)[1:]
+        self._publisher.publish(pubmsg)
+        pubmsg = String()
+        pubmsg.data = str(recv_msg)[1:]
         self._publisher.publish(pubmsg)
         self.i += 1
 
@@ -77,8 +84,8 @@ class KukaRsiSimulator(Node):
                                      'A': '0.0', 'B': '0.0', 'C': '0.0'})
         ET.SubElement(root, 'AIPos', {'A1': str(q[0]), 'A2': str(q[1]), 'A3': str(q[2]),
                                       'A4': str(q[3]), 'A5': str(q[4]), 'A6': str(q[5])})
-        ET.SubElement(root, 'ASPos', {'A1': '0.0', 'A2': '0.0', 'A3': '0.0',
-                                      'A4': '0.0', 'A5': '0.0', 'A6': '0.0'})
+        ET.SubElement(root, 'ASPos', {'A1': '0.0', 'A2': '-90.0', 'A3': '90.0',
+                                      'A4': '0.0', 'A5': '90.0', 'A6': '0.0'})
         ET.SubElement(root, 'Delay', {'D': str(timeout_count)})
         ET.SubElement(root, 'IPOC').text = str(ipoc)
         return ET.tostring(root)

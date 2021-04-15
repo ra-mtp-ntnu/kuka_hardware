@@ -1,0 +1,36 @@
+<?xml version="1.0"?>
+<robot xmlns:xacro="http://www.ros.org/wiki/xacro">
+    <xacro:macro name="kuka_kr6r900sixx_system_position" params="name">
+        <ros2_control name="${name}" type="system">
+            <hardware>
+                <plugin>kuka_rsi_hardware</plugin>
+                <param name="rsi_ip">127.0.0.1</param>
+                <param name="rsi_port">49152</param>
+            </hardware>
+            <joint name="joint_a1">
+                <command_interface name="position" />
+                <state_interface name="position" />
+            </joint>
+            <joint name="joint_a2">
+                <command_interface name="position" />
+                <state_interface name="position" />
+            </joint>
+            <joint name="joint_a3">
+                <command_interface name="position" />
+                <state_interface name="position" />
+            </joint>
+            <joint name="joint_a4">
+                <command_interface name="position" />
+                <state_interface name="position" />
+            </joint>
+            <joint name="joint_a5">
+                <command_interface name="position" />
+                <state_interface name="position" />
+            </joint>
+            <joint name="joint_a6">
+                <command_interface name="position" />
+                <state_interface name="position" />
+            </joint>
+        </ros2_control>
+    </xacro:macro>
+</robot>

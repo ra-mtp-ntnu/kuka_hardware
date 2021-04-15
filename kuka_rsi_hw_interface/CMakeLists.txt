@@ -11,10 +11,8 @@ if(CMAKE_COMPILER_IS_GNUCXX OR CMAKE_CXX_COMPILER_ID MATCHES "Clang")
 endif()
 
 find_package(ament_cmake REQUIRED)
-find_package(controller_interface REQUIRED)
-find_package(controller_manager REQUIRED)
 find_package(hardware_interface REQUIRED)
-find_package(rcutils REQUIRED)
+find_package(pluginlib REQUIRED)
 find_package(rclcpp REQUIRED)
 find_package(angles REQUIRED)
 find_package(tinyxml_vendor REQUIRED)
@@ -26,19 +24,9 @@ target_include_directories(kuka_rsi_hardware
 target_link_libraries(kuka_rsi_hardware ${TinyXML_LIBRARY})
 ament_target_dependencies(kuka_rsi_hardware
                           hardware_interface
-                          rcutils
+                          pluginlib
+                          rclcpp
                           angles)
-
-# add_executable(kuka_rsi_hardware_node src/kuka_rsi_hardware_node.cpp)
-# target_include_directories(kuka_rsi_hardware_node
-#                            PRIVATE include &{TinyXML_INCLUDE_DIRS})
-# target_link_libraries(kuka_rsi_hardware_node kuka_rsi_hardware
-#                       ${TinyXML_LIBRARY})
-# ament_target_dependencies(kuka_rsi_hardware_node
-#                           controller_interface
-#                           controller_manager
-#                           rcutils
-#                           rclcpp)
 
 # Causes the visibility macros to use dllexport rather than dllimport, which is
 # appropriate when building the dll but not consuming it.
@@ -52,12 +40,11 @@ install(TARGETS kuka_rsi_hardware
         LIBRARY DESTINATION lib
         RUNTIME DESTINATION bin)
 
-# install(TARGETS kuka_rsi_hardware_node DESTINATION lib/${PROJECT_NAME})
-
-install(DIRECTORY config DESTINATION share/${PROJECT_NAME})
+install(DIRECTORY config DESTINATION share/kuka_rsi_hardware)
 
 pluginlib_export_plugin_description_file(hardware_interface kuka_rsi_hardware.xml)
 
 ament_export_libraries(kuka_rsi_hardware)
 ament_export_include_directories(include)
+ament_export_dependencies(hardware_interface pluginlib rclcpp)
 ament_package()

@@ -1,4 +1,4 @@
-# Copyright 2019 Norwegian University of Science and Technology
+# Copyright 2021 Norwegian University of Science and Technology
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -12,35 +12,61 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+# Original author: Lars Tingelstad
+# Co-author: Mathias Hauan Arbo
+
 import os
 
 from ament_index_python.packages import get_package_share_directory
 from launch import LaunchDescription
 from launch_ros.actions import Node
 
+import xacro
 
 def generate_launch_description():
+    # Get URDF via xacro
+    robot_description_path = os.path.join(
+        get_package_share_directory('kuka_kr6_support'),
+        'urdf',
+        'kr6r900sixx.xacro'
+    )
+    robot_description_config = xacro.process_file(robot_description_path)
+    robot_description = {'robot_description': robot_description_config.toxml()}
 
-    urdf = os.path.join(get_package_share_directory(
-        'kuka_kr6_support'), 'urdf', 'kr6r900sixx.urdf')
-    assert os.path.exists(urdf)
-
-    rviz_config_dir = os.path.join(get_package_share_directory(
-        'kuka_kr6_support'), 'config', 'model.rviz')
-    assert os.path.exists(rviz_config_dir)
-
+    kuka_kr6900sixx_controllers = os.path.join(
+        get_package_share_directory('kuka_kr6_support'),
+        'config',
+        'kuka_kr6r900sixx_controllers.yaml'
+    )
+    rviz_config_file = os.path.join(
+        get_package_share_directory('kuka_kr6_support'),
+        'config',
+        'model.rviz'
+    )
+    control_node = Node(
+        package='controller_manager',
+        executable='ros2_control_node',
+        parameters=[robot_description, kuka_kr6900sixx_controllers],
+        output={
+            'stdout': 'screen',
+            'stderr': 'screen'
+        }
+    )
+    robot_state_publisher_node = Node(
+        package='robot_state_publisher',
+        executable='robot_state_publisher',
+        output='both',
+        parameters=[robot_description]
+    )
+    rviz_node = Node(
+        package='rviz2',
+        executable='rviz2',
+        name='rviz2',
+        output='log',
+        arguments=['-d', rviz_config_file] 
+    )
     return LaunchDescription([
-        Node(package='rviz2',
-             node_executable='rviz2',
-             node_name='rviz2',
-             arguments=['-d', rviz_config_dir],
-             output='screen'
-             ),
-
-        Node(package='robot_state_publisher',
-             node_executable='robot_state_publisher',
-             node_name='robot_state_publisher',
-             output='screen',
-             arguments=[urdf]),
-
+        control_node,
+        robot_state_publisher_node,
+        rviz_node
     ])
