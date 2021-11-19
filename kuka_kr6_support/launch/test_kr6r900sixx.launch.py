@@ -17,56 +17,92 @@
 
 import os
 
-from ament_index_python.packages import get_package_share_directory
 from launch import LaunchDescription
-from launch_ros.actions import Node
+from launch.substitutions import Command, FindExecutable, PathJoinSubstitution
 
-import xacro
+from launch_ros.actions import Node
+from launch_ros.substitutions import FindPackageShare
+
 
 def generate_launch_description():
     # Get URDF via xacro
-    robot_description_path = os.path.join(
-        get_package_share_directory('kuka_kr6_support'),
-        'urdf',
-        'kr6r900sixx.xacro'
+    robot_description_content = Command(
+        [
+            PathJoinSubstitution([FindExecutable(name="xacro")]),
+            " ",
+            PathJoinSubstitution(
+                [
+                    FindPackageShare("kuka_kr6_support"),
+                    "urdf",
+                    "kr6r900sixx.xacro",
+                ]
+            ),
+        ]
     )
-    robot_description_config = xacro.process_file(robot_description_path)
-    robot_description = {'robot_description': robot_description_config.toxml()}
+    robot_description = {"robot_description": robot_description_content}
 
-    kuka_kr6900sixx_controllers = os.path.join(
-        get_package_share_directory('kuka_kr6_support'),
-        'config',
-        'kuka_kr6r900sixx_controllers.yaml'
+    robot_controllers = PathJoinSubstitution(
+        [
+            FindPackageShare("kuka_kr6_support"),
+            "config",
+            "kuka_kr6r900sixx_controllers.yaml",
+        ]
     )
-    rviz_config_file = os.path.join(
-        get_package_share_directory('kuka_kr6_support'),
-        'config',
-        'model.rviz'
+
+    rviz_config_file = PathJoinSubstitution(
+        [FindPackageShare("kuka_kr6_support"), "config", "model.rviz"]
     )
+
     control_node = Node(
-        package='controller_manager',
-        executable='ros2_control_node',
-        parameters=[robot_description, kuka_kr6900sixx_controllers],
-        output={
-            'stdout': 'screen',
-            'stderr': 'screen'
-        }
+        package="controller_manager",
+        executable="ros2_control_node",
+        parameters=[robot_description, robot_controllers],
+        output={"stdout": "screen", "stderr": "screen"},
     )
+
     robot_state_publisher_node = Node(
-        package='robot_state_publisher',
-        executable='robot_state_publisher',
-        output='both',
-        parameters=[robot_description]
+        package="robot_state_publisher",
+        executable="robot_state_publisher",
+        output="both",
+        parameters=[robot_description],
     )
     rviz_node = Node(
-        package='rviz2',
-        executable='rviz2',
-        name='rviz2',
-        output='log',
-        arguments=['-d', rviz_config_file] 
+        package="rviz2",
+        executable="rviz2",
+        name="rviz2",
+        output="log",
+        arguments=["-d", rviz_config_file],
     )
-    return LaunchDescription([
+
+    joint_state_broadcaster_spawner = Node(
+        package="controller_manager",
+        executable="spawner",
+        arguments=[
+            "joint_state_broadcaster",
+            "--controller-manager",
+            "/controller_manager",
+        ],
+    )
+
+    robot_controller_spawner = Node(
+        package="controller_manager",
+        executable="spawner",
+        arguments=["forward_position_controller", "-c", "/controller_manager"],
+    )
+
+    rsi_simulator_node = Node(
+        package="kuka_rsi_simulator",
+        executable="kuka_rsi_simulator",
+        output="both",
+    )
+
+    nodes = [
         control_node,
         robot_state_publisher_node,
-        rviz_node
-    ])
+        rviz_node,
+        joint_state_broadcaster_spawner,
+        robot_controller_spawner,
+        rsi_simulator_node,
+    ]
+
+    return LaunchDescription(nodes)
