@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.5)
-project(kuka_rsi_hw_interface)
+project(kuka_rsi_hardware)
 
 # Default to C++14
 if(NOT CMAKE_CXX_STANDARD)

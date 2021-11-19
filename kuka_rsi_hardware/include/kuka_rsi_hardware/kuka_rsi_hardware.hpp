@@ -26,33 +26,33 @@
 #include "rclcpp/macros.hpp"
 #include "angles/angles.h"
 
-#include "hardware_interface/base_interface.hpp"
 #include "hardware_interface/system_interface.hpp"
 #include "hardware_interface/handle.hpp"
 #include "hardware_interface/hardware_info.hpp"
 #include "hardware_interface/types/hardware_interface_return_values.hpp"
-#include "hardware_interface/types/hardware_interface_status_values.hpp"
 #include "kuka_rsi_hardware/visibility_control.h"
 
 #include "kuka_rsi_hardware/rsi_command.h"
 #include "kuka_rsi_hardware/rsi_state.h"
 #include "kuka_rsi_hardware/udp_server.h"
 
-using hardware_interface::return_type;
+using CallbackReturn = rclcpp_lifecycle::node_interfaces::LifecycleNodeInterface::CallbackReturn;
 
 namespace kuka_rsi_hardware
 {
 
 using namespace angles;
 
-class KukaRSIHardware : public 
-  hardware_interface::BaseInterface<hardware_interface::SystemInterface>
+class KukaRSIHardware : public hardware_interface::SystemInterface
 {
 public:
   RCLCPP_SHARED_PTR_DEFINITIONS(KukaRSIHardware);
 
   KUKA_RSI_HARDWARE_PUBLIC
-  return_type configure(const hardware_interface::HardwareInfo & info) override;
+  CallbackReturn on_init(const hardware_interface::HardwareInfo & info) override;
+
+  KUKA_RSI_HARDWARE_PUBLIC
+  CallbackReturn on_configure(const rclcpp_lifecycle::State & previous_state) override;
 
   KUKA_RSI_HARDWARE_PUBLIC
   std::vector<hardware_interface::StateInterface> export_state_interfaces() override;
@@ -61,20 +61,23 @@ public:
   std::vector<hardware_interface::CommandInterface> export_command_interfaces() override;
 
   KUKA_RSI_HARDWARE_PUBLIC
-  return_type start() override;
+  CallbackReturn on_activate(const rclcpp_lifecycle::State & previous_state) override;
 
   KUKA_RSI_HARDWARE_PUBLIC
-  return_type stop() override;
+  CallbackReturn on_deactivate(const rclcpp_lifecycle::State & previous_state) override;
 
   KUKA_RSI_HARDWARE_PUBLIC
-  return_type read() override;
+  hardware_interface::return_type read() override;
 
   KUKA_RSI_HARDWARE_PUBLIC
-  return_type write() override;
+  hardware_interface::return_type write() override;
 
 private:
   std::vector<double> joint_position_ = {0.0, 0.0, 0.0, 0.0, 0.0, 0.0};
   std::vector<double> joint_position_command_ = {0.0, 0.0, 0.0, 0.0, 0.0, 0.0};
+
+  std::vector<double> hw_commands_;
+  std::vector<double> hw_states_;
   
   // RSI 
   RSIState rsi_state_;
