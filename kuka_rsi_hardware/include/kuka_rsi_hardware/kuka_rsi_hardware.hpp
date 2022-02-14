@@ -46,7 +46,7 @@ using namespace angles;
 class KukaRSIHardware : public hardware_interface::SystemInterface
 {
 public:
-  RCLCPP_SHARED_PTR_DEFINITIONS(KukaRSIHardware);
+  RCLCPP_SHARED_PTR_DEFINITIONS(KukaRSIHardware)
 
   KUKA_RSI_HARDWARE_PUBLIC
   CallbackReturn on_init(const hardware_interface::HardwareInfo & info) override;
